@@ -1,8 +1,62 @@
+# version: "3.9"
+
+# networks:
+#   n8n-flaresolverr-network:
+#     name: n8n-flaresolverr-network   # compose will create this for you
+#     driver: bridge
+
+# services:
+#   flaresolverr:
+#     image: flaresolverr/flaresolverr:latest
+#     container_name: flaresolverr
+#     restart: unless-stopped
+#     environment:
+#       - TZ=Asia/Dhaka
+#       # - LOG_LEVEL=info   # optional
+#     ports:
+#       - "127.0.0.1:8191:8191"   # keep internal; call via http://flaresolverr:8191 from n8n
+#     networks:
+#       - n8n-flaresolverr-network
+
+#   n8n:
+#     image: n8nio/n8n:latest
+#     container_name: n8n-container
+#     restart: unless-stopped
+#     environment:
+#       - NODE_ENV=production
+#       - TZ=Asia/Dhaka
+
+#       # Public-facing settings
+#       - N8N_HOST=n8n.awlabs.online
+#       - N8N_PORT=5678
+#       - N8N_PROTOCOL=https
+#       - N8N_EDITOR_BASE_URL=https://n8n.awlabs.online/
+#       - WEBHOOK_URL=https://n8n.awlabs.online/
+
+#       # Security / data
+#       - N8N_SECURE_COOKIE=true
+#       - N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true
+#       - N8N_DEFAULT_BINARY_DATA_MODE=filesystem
+#       # - N8N_ENCRYPTION_KEY=change-me   # strongly recommended for prod
+
+#     ports:
+#       - "127.0.0.1:5678:5678"     # only localhost; reverse proxy handles internet traffic
+
+#     volumes:
+#       - /root/n8n_data:/home/node/.n8n
+
+#     networks:
+#       - n8n-flaresolverr-network
+
+#     depends_on:
+#       - flaresolverr
+
+
 version: "3.9"
 
 networks:
-  n8n-flaresolverr-network:
-    name: n8n-flaresolverr-network   # compose will create this for you
+  n8n-net:
+    name: n8n-net
     driver: bridge
 
 services:
@@ -12,11 +66,11 @@ services:
     restart: unless-stopped
     environment:
       - TZ=Asia/Dhaka
-      # - LOG_LEVEL=info   # optional
+    # keep internal; call it from n8n via http://flaresolverr:8191
     ports:
-      - "127.0.0.1:8191:8191"   # keep internal; call via http://flaresolverr:8191 from n8n
+      - "127.0.0.1:8191:8191"
     networks:
-      - n8n-flaresolverr-network
+      - n8n-net
 
   n8n:
     image: n8nio/n8n:latest
@@ -26,27 +80,44 @@ services:
       - NODE_ENV=production
       - TZ=Asia/Dhaka
 
-      # Public-facing settings
+      # Public URL (tunnel) so links & webhooks are generated correctly
       - N8N_HOST=n8n.awlabs.online
       - N8N_PORT=5678
       - N8N_PROTOCOL=https
       - N8N_EDITOR_BASE_URL=https://n8n.awlabs.online/
       - WEBHOOK_URL=https://n8n.awlabs.online/
 
-      # Security / data
-      - N8N_SECURE_COOKIE=true
+      # Allow HTTP login on the direct IP:5678 endpoint
+      - N8N_SECURE_COOKIE=false
+
       - N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true
       - N8N_DEFAULT_BINARY_DATA_MODE=filesystem
-      # - N8N_ENCRYPTION_KEY=change-me   # strongly recommended for prod
+      # Strongly recommended:
+      # - N8N_ENCRYPTION_KEY=put-a-long-random-32+char-string-here
 
+    # expose publicly so http://159.198.37.158:5678 works
     ports:
-      - "127.0.0.1:5678:5678"     # only localhost; reverse proxy handles internet traffic
+      - "5678:5678"
 
     volumes:
       - /root/n8n_data:/home/node/.n8n
 
     networks:
-      - n8n-flaresolverr-network
+      - n8n-net
 
     depends_on:
       - flaresolverr
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    restart: unless-stopped
+    depends_on:
+      - n8n
+    networks:
+      - n8n-net
+    command: >-
+      tunnel --no-autoupdate run --token
+      eyJhIjoiMWJiNGYzMzQxNjA4NWM4YTA5Mzg3ZTBlYzYwOTFjNzciLCJ0IjoiMGEyYWE1NmUtY2ZiOC00ODIxLTk4ZDctYzhiY2E2NzFhNGRhIiwicyI6Ik9USXhPVFUyTURndE9UTXpNUzAwTW1RNExUa3dOakV0WldRMVltWTJPVGN3TnpaaSJ9
+
+
