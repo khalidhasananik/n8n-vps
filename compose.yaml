@@ -67,6 +67,40 @@
 #       tunnel --no-autoupdate run --token
 #       eyJhIjoiMWJiNGYzMzQxNjA4NWM4YTA5Mzg3ZTBlYzYwOTFjNzciLCJ0IjoiOWYwMmMxMzEtYjU4Ny00MmUwLTlhMzMtMThjMGQyY2I2Yzg3IiwicyI6IllqQmhaVFEyT1RRdFkyTXpOQzAwTm1GaUxUZzFNbU10WTJaaE1EQTNNak0wTURGaiJ9
 
+# version: "3.9"
+
+# services:
+#   n8n:
+#     image: n8nio/n8n
+#     container_name: n8n_container
+#     restart: unless-stopped
+#     ports:
+#       - "5678:5678"
+#     environment:
+#       - N8N_HOST=n8n.khalidhasananik.space
+#       - N8N_EDITOR_BASE_URL=https://n8n.khalidhasananik.space/
+#       - WEBHOOK_URL=https://n8n.khalidhasananik.space/
+#       - N8N_SECURE_COOKIE=false
+#       - N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true
+#       - N8N_DEFAULT_BINARY_DATA_MODE=filesystem
+#     volumes:
+#       - /home/khalidhasananik001/n8n_data:/home/node/.n8n
+#     networks:
+#       - n8n-flaresolverr-network
+
+#   flaresolverr:
+#     image: flaresolverr/flaresolverr
+#     container_name: flaresolverr
+#     restart: unless-stopped
+#     ports:
+#       - "8191:8191"
+#     networks:
+#       - n8n-flaresolverr-network
+
+# networks:
+#   n8n-flaresolverr-network:
+#     driver: bridge
+
 version: "3.9"
 
 services:
@@ -85,18 +119,4 @@ services:
       - N8N_DEFAULT_BINARY_DATA_MODE=filesystem
     volumes:
       - /home/khalidhasananik001/n8n_data:/home/node/.n8n
-    networks:
-      - n8n-flaresolverr-network
 
-  flaresolverr:
-    image: flaresolverr/flaresolverr
-    container_name: flaresolverr
-    restart: unless-stopped
-    ports:
-      - "8191:8191"
-    networks:
-      - n8n-flaresolverr-network
-
-networks:
-  n8n-flaresolverr-network:
-    driver: bridge
