@@ -1,69 +1,102 @@
+# version: "3.9"
+
+# networks:
+#   n8n-net:
+#     name: n8n-net
+#     driver: bridge
+
+# services:
+#   flaresolverr:
+#     image: flaresolverr/flaresolverr:latest
+#     container_name: flaresolverr
+#     restart: unless-stopped
+#     environment:
+#       - TZ=Asia/Dhaka
+#     # Keep internal; n8n calls it via http://flaresolverr:8191
+#     ports:
+#       - "127.0.0.1:8191:8191"
+#     networks:
+#       - n8n-net
+
+#   n8n:
+#     image: n8nio/n8n:latest
+#     container_name: n8n-container
+#     restart: unless-stopped
+#     environment:
+#       - NODE_ENV=production
+#       - TZ=Asia/Dhaka
+
+#       # Public URL used in links/webhooks (served via the tunnel)
+#       - N8N_HOST=n8n.awlabs.online
+#       - N8N_PORT=5678
+#       - N8N_PROTOCOL=https
+#       - N8N_EDITOR_BASE_URL=https://n8n.awlabs.online/
+#       - WEBHOOK_URL=https://n8n.awlabs.online/
+
+#       # You also want plain HTTP on the IP:5678 endpoint
+#       - N8N_SECURE_COOKIE=false
+
+#       - N8N_DEFAULT_BINARY_DATA_MODE=filesystem
+#       - N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true
+#       # Strongly recommended before storing creds:
+#       # - N8N_ENCRYPTION_KEY=put-a-long-random-32+char-string-here
+
+#     # Publish so http://159.198.37.158:5678 works
+#     ports:
+#       - "5678:5678"
+
+#     volumes:
+#       - /root/n8n_data:/home/node/.n8n
+
+#     networks:
+#       - n8n-net
+
+#     depends_on:
+#       - flaresolverr
+
+#   cloudflared:
+#     image: cloudflare/cloudflared:latest
+#     container_name: cloudflared
+#     restart: unless-stopped
+#     depends_on:
+#       - n8n
+#     networks:
+#       - n8n-net
+#     # ⬇️ Paste your real tunnel token after --token (single line)
+#     command: >-
+#       tunnel --no-autoupdate run --token
+#       eyJhIjoiMWJiNGYzMzQxNjA4NWM4YTA5Mzg3ZTBlYzYwOTFjNzciLCJ0IjoiOWYwMmMxMzEtYjU4Ny00MmUwLTlhMzMtMThjMGQyY2I2Yzg3IiwicyI6IllqQmhaVFEyT1RRdFkyTXpOQzAwTm1GaUxUZzFNbU10WTJaaE1EQTNNak0wTURGaiJ9
+
 version: "3.9"
 
-networks:
-  n8n-net:
-    name: n8n-net
-    driver: bridge
-
 services:
-  flaresolverr:
-    image: flaresolverr/flaresolverr:latest
-    container_name: flaresolverr
-    restart: unless-stopped
-    environment:
-      - TZ=Asia/Dhaka
-    # Keep internal; n8n calls it via http://flaresolverr:8191
-    ports:
-      - "127.0.0.1:8191:8191"
-    networks:
-      - n8n-net
-
   n8n:
-    image: n8nio/n8n:latest
-    container_name: n8n-container
+    image: n8nio/n8n
+    container_name: n8n_container
     restart: unless-stopped
-    environment:
-      - NODE_ENV=production
-      - TZ=Asia/Dhaka
-
-      # Public URL used in links/webhooks (served via the tunnel)
-      - N8N_HOST=n8n.awlabs.online
-      - N8N_PORT=5678
-      - N8N_PROTOCOL=https
-      - N8N_EDITOR_BASE_URL=https://n8n.awlabs.online/
-      - WEBHOOK_URL=https://n8n.awlabs.online/
-
-      # You also want plain HTTP on the IP:5678 endpoint
-      - N8N_SECURE_COOKIE=false
-
-      - N8N_DEFAULT_BINARY_DATA_MODE=filesystem
-      - N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true
-      # Strongly recommended before storing creds:
-      # - N8N_ENCRYPTION_KEY=put-a-long-random-32+char-string-here
-
-    # Publish so http://159.198.37.158:5678 works
     ports:
       - "5678:5678"
-
+    environment:
+      - N8N_HOST=n8n.khalidhasananik.space
+      - N8N_EDITOR_BASE_URL=https://n8n.khalidhasananik.space/
+      - WEBHOOK_URL=https://n8n.khalidhasananik.space/
+      - N8N_SECURE_COOKIE=false
+      - N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true
+      - N8N_DEFAULT_BINARY_DATA_MODE=filesystem
     volumes:
-      - /root/n8n_data:/home/node/.n8n
-
+      - /home/khalidhasananik001/n8n_data:/home/node/.n8n
     networks:
-      - n8n-net
+      - n8n-flaresolverr-network
 
-    depends_on:
-      - flaresolverr
-
-  cloudflared:
-    image: cloudflare/cloudflared:latest
-    container_name: cloudflared
+  flaresolverr:
+    image: flaresolverr/flaresolverr
+    container_name: flaresolverr
     restart: unless-stopped
-    depends_on:
-      - n8n
+    ports:
+      - "8191:8191"
     networks:
-      - n8n-net
-    # ⬇️ Paste your real tunnel token after --token (single line)
-    command: >-
-      tunnel --no-autoupdate run --token
-      eyJhIjoiMWJiNGYzMzQxNjA4NWM4YTA5Mzg3ZTBlYzYwOTFjNzciLCJ0IjoiOWYwMmMxMzEtYjU4Ny00MmUwLTlhMzMtMThjMGQyY2I2Yzg3IiwicyI6IllqQmhaVFEyT1RRdFkyTXpOQzAwTm1GaUxUZzFNbU10WTJaaE1EQTNNak0wTURGaiJ9
+      - n8n-flaresolverr-network
 
+networks:
+  n8n-flaresolverr-network:
+    driver: bridge
