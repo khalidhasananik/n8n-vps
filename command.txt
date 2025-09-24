@@ -1,0 +1,2 @@
+docker exec -u node -it n8n_container n8n user-management:reset
+docker restart n8n_container
