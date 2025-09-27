@@ -11,3 +11,15 @@ echo \
   $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 sudo apt-get update
+
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+sudo systemctl status docker
+sudo systemctl start docker
+
+cd ~
+mkdir n8n_data
+sudo chown -R 1000:1000 n8n_data
+sudo chmod -R 755 n8n_data
+
+wget https://raw.githubusercontent.com/khalidhasananik/n8n-vps/refs/heads/main/compose.yaml -O compose.yaml
+sudo -E docker compose up -dsudo -E docker compose up -d
