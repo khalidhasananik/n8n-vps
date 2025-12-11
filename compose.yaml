@@ -137,6 +137,6 @@ services:
       - N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true
       - N8N_DEFAULT_BINARY_DATA_MODE=filesystem
     volumes:
-      # - /root/n8n_data:/home/node/.n8n
-      - /home/khalidhasananik001/n8n_data:/home/node/.n8n
+      - /root/n8n_data:/home/node/.n8n
+      #- /home/khalidhasananik001/n8n_data:/home/node/.n8n
 
