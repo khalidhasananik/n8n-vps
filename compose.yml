@@ -140,7 +140,7 @@
 #       - /root/n8n_data:/home/node/.n8n
 #       #- /home/khalidhasananik001/n8n_data:/home/node/.n8n
 
-version: "3.9"
+# version: "3.9"
 
 services:
   n8n:

@@ -23,3 +23,6 @@ sudo chmod -R 755 n8n_data
 
 wget https://raw.githubusercontent.com/khalidhasananik/n8n-vps/refs/heads/main/compose.yaml -O compose.yaml
 sudo -E docker compose up -d
+
+
+wget https://raw.githubusercontent.com/khalidhasananik/n8n-vps/refs/heads/main/compose.yml -O compose.yml
